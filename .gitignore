@@ -361,3 +361,14 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+CalculatorTest/PostfixCalculator.sln
+CalculatorTest/Calculatortest.vcxproj
+CalculatorTest/Calculatortest.vcxproj.User
+CalculatorTest/packages.config
+CalculatorTest/packages
+
+PostfixCalculator/PostfixCalculator.vcxproj
+PostfixCalculator/PostfixCalculator.vcxproj.filters
+PostfixCalculator/PostfixCalculator.vcxproj.user
+PostfixCalculator.sln
