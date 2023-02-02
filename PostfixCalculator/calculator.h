@@ -2,17 +2,15 @@
 #define CALCULATOR_H_
 
 #include "cqueue.h"
+#include "returnType.h"
 
-#define STRING_LEN 100	// Maximum string length
-
-typedef enum CalculatorReturnCode {
-	SUCCESS,
-	FAILURE,
-	INVALID_EXPRESSION
-} ret_t;
+#define MAX_STRING_LEN 100
 
 /**
 * Gets string arithmetic expression and calculates it
+* returns SUCCESS 
+* returns FAILURE if no memory available for calculation
+* returns INVALID_EXPRESSION
 */
 ret_t postfixCalculator(char expression[], double* result);
 
