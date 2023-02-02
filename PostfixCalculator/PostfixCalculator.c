@@ -95,17 +95,33 @@ static inline ret_t r_parenthese(cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline void plus(cqueue_t* queue) {
+static inline ret_t plus(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
-	queue_peek_end(queue, &token);
+	queue_peek_end(token_queue, &token);
 
 	if (token->type == OPERAND || token->type == R_PARENTHESE) {
-		returns = push_token(queue, B_PLUS, '+');
+		returns = push_token(token_queue, B_PLUS, '+');
 	}
 	else {
-		returns = push_token(queue, U_PLUS, '+');
+		returns = push_token(token_queue, U_PLUS, '+');
+	}
+
+	return returns;
+}
+
+static inline ret_t minus(cqueue_t* token_queue) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	queue_peek_end(token_queue, &token);
+
+	if (token->type == OPERAND || token->type == R_PARENTHESE) {
+		returns = push_token(token_queue, B_MINUS, '-');
+	}
+	else {
+		returns = push_token(token_queue, U_MINUS, '-');
 	}
 
 	return returns;
