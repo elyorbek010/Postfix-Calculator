@@ -14,6 +14,6 @@ typedef enum CalculatorReturnCode {
 /**
 * Gets string arithmetic expression and calculates it
 */
-void postfixCalculator(char expression[], double* result);
+ret_t postfixCalculator(char expression[], double* result);
 
 #endif
