@@ -69,8 +69,7 @@ static inline ret_t l_parenthese(cqueue_t* token_queue) {
 	else if(token->type == OPERAND || token->type == R_PARENTHESE) {
 		if (push_token(token_queue, B_MULTIPLY, '*') == FAILURE)
 			return FAILURE;
-		if (push_token(token_queue, L_PARENTHESE, '(') == FAILURE)
-			return FAILURE;
+		returns = push_token(token_queue, L_PARENTHESE, '(');
 	}
 	else {
 		return INVALID_EXPRESSION;
@@ -154,6 +153,33 @@ static inline void divide(cqueue_t* token_queue) {
 	}
 	else {
 		returns = INVALID_EXPRESSION;
+	}
+
+	return returns;
+}
+
+static inline ret_t digit(cqueue_t* token_queue, char digit, bool prev_is_space) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	queue_peek_end(token_queue, &token);
+
+	if (token->type == OPERAND) {
+		if (prev_is_space) {
+			returns = INVALID_EXPRESSION;
+		}
+		else {
+			token->operand *= 10;
+			token->operand += digit - '0';
+		}
+	}
+	else if (token->type == R_PARENTHESE) {
+		if (push_token(token_queue, B_MULTIPLY, '*') == FAILURE)
+			return FAILURE;
+		returns = push_token(token_queue, OPERAND, digit);
+	}
+	else {
+		returns = push_token(token_queue, OPERAND, digit);
 	}
 
 	return returns;
