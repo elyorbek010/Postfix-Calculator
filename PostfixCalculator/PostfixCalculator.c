@@ -142,7 +142,7 @@ static inline ret_t multiply(cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline void divide(cqueue_t* token_queue) {
+static inline ret_t divide(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
@@ -186,7 +186,51 @@ static inline ret_t digit(cqueue_t* token_queue, char digit, bool prev_is_space)
 }
 
 static inline ret_t parser(const char expression[], cqueue_t* token_queue) {
-	//
+	size_t exp_length = strlen(expression);
+	bool prev_is_space = false;
+	token_t* token = NULL;
+	size_t idx = 0;
+	ret_t returns = SUCCESS;
+
+	returns = l_parenthese(token_queue); // add initial '('
+	if (returns != SUCCESS) {
+		return returns;
+	}
+
+	while (idx++ < exp_length) {
+		if (isdigit(expression[idx])) {
+			returns = digit(token_queue, expression[idx], prev_is_space);
+			prev_is_space = false;
+		}
+		else if (is_space(expression[idx])) {
+			prev_is_space = true;
+			returns = SUCCESS;
+		}
+		else {
+			switch (expression[idx]) {
+			case '(': returns = l_parenthese(token_queue);
+				break;
+			case ')': returns = r_parenthese(token_queue);
+				break;
+			case '+': returns = plus(token_queue);
+				break;
+			case '-': returns = minus(token_queue);
+				break;
+			case '*': returns = multiply(token_queue);
+				break;
+			case '/': returns = divide(token_queue);
+				break;
+			default:
+				returns = INVALID_EXPRESSION;
+			}
+		}
+		if (returns != SUCCESS)
+			return returns;
+	}
+
+	returns = r_parenthese(token_queue); // add final ')'
+
+	return returns;
 }
 
 static inline ret_t inf2post(cqueue_t* inf_token_queue) {
