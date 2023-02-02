@@ -7,6 +7,27 @@
 
 #define QUEUE_CAPACITY (2 * STRING_LEN)
 
+#if defined(DEBUG) && DEBUG
+#define debug_print(fmt, ...) \
+    fprintf(stderr, fmt, __VA_ARGS__)
+#else
+#define debug_print(fmt, ...)
+#endif
+
+#define CHECK_AND_RETURN_IF_NOT_EXIST(ptr)     \
+    if (ptr == NULL)                           \
+    {                                          \
+        debug_print("object does not exist\n");\
+        return FAILURE;						   \
+    }
+
+
+#define CREATE_TOKEN(token)			 \
+{									 \
+token = malloc(sizeof token);		 \
+CHECK_AND_RETURN_IF_NOT_EXIST(token);\
+}								
+
 typedef enum TokenType {
 	OPERAND,
 	U_PLUS,

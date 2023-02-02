@@ -5,6 +5,8 @@
 
 #define STRING_LEN 100	// Maximum string length
 
+#define DEBUG 1
+
 typedef enum CalculatorReturnCode {
 	SUCCESS,
 	FAILURE,
