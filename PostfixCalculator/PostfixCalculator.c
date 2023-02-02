@@ -7,7 +7,7 @@
 
 #define QUEUE_CAPACITY (2 * STRING_LEN)
 
-#if defined(DEBUG) && DEBUG
+#if _DEBUG
 #define debug_print(fmt, ...) \
     fprintf(stderr, fmt, __VA_ARGS__)
 #else
