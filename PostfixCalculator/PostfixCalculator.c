@@ -61,10 +61,10 @@ ret_t push_token(cqueue_t* token_queue, tokenType type, char character) {
 
 static inline ret_t l_parenthese(cqueue_t* token_queue) {
 	token_t* token = NULL;
+	ret_t returns = SUCCESS;
 
 	if (queue_peek_end(token_queue, &token) == CQUEUE_UNDERFLOW) {
-		if (push_token(token_queue, L_PARENTHESE, '(') == FAILURE)
-			return FAILURE;
+		returns = push_token(token_queue, L_PARENTHESE, '(');
 	}
 	else if(token->type == OPERAND || token->type == R_PARENTHESE) {
 		if (push_token(token_queue, B_MULTIPLY, '*') == FAILURE)
@@ -72,10 +72,10 @@ static inline ret_t l_parenthese(cqueue_t* token_queue) {
 		returns = push_token(token_queue, L_PARENTHESE, '(');
 	}
 	else {
-		return INVALID_EXPRESSION;
+		returns = INVALID_EXPRESSION;
 	}
 
-	return SUCCESS;
+	return returns;
 }
 
 static inline ret_t r_parenthese(cqueue_t* token_queue) {
