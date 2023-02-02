@@ -1,14 +1,28 @@
-// PostfixCalculator.cpp : Defines the functions for the static library.
+// PostfixCalculator.c : Defines the functions for the static library.
 //
-
 #include "calculator.h"
-#include "cqueue.h"
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-cqueue_t* parser(char* expression) {
-	cqueue_t* queue = queue_create(EXPR_LEN);
-}
+#define QUEUE_CAPACITY (2 * STRING_LEN)
 
-double PostfixCalculator(char * expression)
-{
-	cqueue_t* cqueue = parser(expression);
-}
+typedef enum TokenType {
+	OPERAND,
+	U_PLUS,
+	U_MINUS,
+	B_PLUS,
+	B_MINUS,
+	B_MULTIPLY,
+	B_DIVIDE,
+	L_PARENTHESE,
+	R_PARENTHESE
+} tokenType;
+
+typedef struct Token {
+	union {
+		char operator;
+		int operand;
+	};
+	tokenType type;
+}token_t;

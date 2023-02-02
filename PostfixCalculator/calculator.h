@@ -3,16 +3,17 @@
 
 #include "cqueue.h"
 
-#define EXPR_LEN 100
+#define STRING_LEN 100	// Maximum string length
+
+typedef enum CalculatorReturnCode {
+	SUCCESS,
+	FAILURE,
+	INVALID_EXPRESSION
+} ret_t;
 
 /**
-* Gets string expression, returns answer of the expression
+* Gets string arithmetic expression and calculates it
 */
-double PostfixCalculator(char * expression);
-
-/**
-* Gets string expression, returns queue of tokens
-*/
-cqueue_t* parser(char* expression);
+void postfixCalculator(char expression[], double* result);
 
 #endif
