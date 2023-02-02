@@ -48,6 +48,36 @@ typedef struct Token {
 	tokenType type;
 }token_t;
 
+ret_t push_token(cqueue_t* token_queue, tokenType type, char character) {
+	token_t* token;
+	CREATE_TOKEN(token);
+
+	token->type = type;
+	token->operand = (type == OPERAND) ? (character - '0') : character;
+	if (queue_push_end(token_queue, token) != CQUEUE_SUCCESS)
+		return FAILURE;
+	return SUCCESS;
+}
+
+static inline ret_t l_parenthese(cqueue_t* queue) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	if (queue_peek_end(queue, &token) == CQUEUE_UNDERFLOW) {
+		if (push_token(queue, L_PARENTHESE, '(') == FAILURE)
+			return FAILURE;
+	}
+	else if(token->type == OPERAND || token->type == R_PARENTHESE) {
+		if (push_token(queue, B_MULTIPLY, '*') == FAILURE)
+			return FAILURE;
+		if (push_token(queue, L_PARENTHESE, '(') == FAILURE)
+			return FAILURE;
+	}
+	else {
+		return INVALID_EXPRESSION;
+	}
+}
+
 static inline ret_t parser(const char expression[], cqueue_t* token_queue) {
 	//
 }
@@ -61,7 +91,7 @@ static inline ret_t post_calc(cqueue_t* postfix_queue, double* result) {
 }
 
 ret_t postfixCalculator(char expression[], double* result) {
-	ret_t returns = 0;
+	ret_t returns = SUCCESS;
 
 	if (strlen(expression) >= STRING_LEN - 1)
 		return INVALID_EXPRESSION;
