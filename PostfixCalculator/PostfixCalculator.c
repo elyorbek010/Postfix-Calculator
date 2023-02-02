@@ -14,28 +14,30 @@
 #define debug_print(fmt, ...)
 #endif
 
-#define CHECK_AND_RETURN_IF_NOT_EXIST(ptr)     \
-    if (ptr == NULL)                           \
-    {                                          \
-        debug_print("object does not exist\n");\
-        return FAILURE;						   \
-    }
+#define CHECK_AND_RETURN_IF_NOT_EXIST(ptr)				\
+		do{												\
+			if ((ptr) == NULL) {                        \
+				debug_print("object does not exist\n"); \
+				return FAILURE;						    \
+			}											\
+		} while (0)
 
 
-#define CREATE_TOKEN(token)			 \
-{									 \
-token = malloc(sizeof token);		 \
-CHECK_AND_RETURN_IF_NOT_EXIST(token);\
-}								
+#define CREATE_TOKEN(token)						 \
+		do {									 \
+			token = malloc(sizeof (token));		 \
+			CHECK_AND_RETURN_IF_NOT_EXIST(token);\
+		} while(0)
+
 
 typedef enum TokenType {
 	OPERAND,
-	U_PLUS,
-	U_MINUS,
 	B_PLUS,
 	B_MINUS,
 	B_MULTIPLY,
 	B_DIVIDE,
+	U_PLUS,
+	U_MINUS,
 	L_PARENTHESE,
 	R_PARENTHESE
 } tokenType;
@@ -202,7 +204,7 @@ static inline ret_t parser(const char expression[], cqueue_t* token_queue) {
 			returns = digit(token_queue, expression[idx], prev_is_space);
 			prev_is_space = false;
 		}
-		else if (is_space(expression[idx])) {
+		else if (isspace(expression[idx])) {
 			prev_is_space = true;
 			returns = SUCCESS;
 		}
@@ -233,38 +235,48 @@ static inline ret_t parser(const char expression[], cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline ret_t inf2post(cqueue_t* inf_token_queue) {
-	//
+static inline ret_t inf2post(cqueue_t* infix_token_queue, cqueue_t* postfix_token_queue) {
+	token_t* token = NULL;
+	cqueue_t* operator_queue = NULL;
+	cqueue_ret_t returns = CQUEUE_SUCCESS;
+
+	// TRANSLATE INF TO POST
+
+	return returns;
 }
 
 static inline ret_t post_calc(cqueue_t* postfix_queue, double* result) {
 	//
 }
 
+
+//before returning every function should free queue;
 ret_t postfixCalculator(char expression[], double* result) {
 	ret_t returns = SUCCESS;
 
 	if (strlen(expression) >= STRING_LEN - 1)
 		return INVALID_EXPRESSION;
 
-	cqueue_t* queue = NULL;
-	
-	if (queue = queue_create(2 * STRING_LEN))
-		return FAILURE;
+	cqueue_t* queue_infix = NULL;
+	cqueue_t* queue_postfix = NULL;
 
-	returns = parser(expression, queue); // parser pushes tokens into queue
+	//FREE QUEUE/////////////////////////////
+	if (!((queue_infix = queue_create(QUEUE_CAPACITY)) && (queue_postfix = queue_create(QUEUE_CAPACITY))))
+		return FAILURE; // if either of queues is NULL, return FAILURE
 
-	if (returns != SUCCESS) {
-		return returns;
-	}
-
-	returns = inf2post(queue); // inf2post arranges tokens into postfix sequence
+	returns = parser(expression, queue_infix); // parser pushes tokens into queue
 
 	if (returns != SUCCESS) {
 		return returns;
 	}
 
-	returns = post_calc(queue, result); // calculates postfix and puts answer into result
+	returns = inf2post(queue_infix, queue_postfix); // inf2post arranges tokens into postfix sequence
+
+	if (returns != SUCCESS) {
+		return returns;
+	}
+
+	returns = post_calc(queue_postfix, result); // calculates postfix and puts answer into result
 
 	return returns;
 }
