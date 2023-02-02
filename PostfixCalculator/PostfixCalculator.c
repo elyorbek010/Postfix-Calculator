@@ -95,6 +95,22 @@ static inline ret_t r_parenthese(cqueue_t* token_queue) {
 	return returns;
 }
 
+static inline void plus(cqueue_t* queue) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	queue_peek_end(queue, &token);
+
+	if (token->type == OPERAND || token->type == R_PARENTHESE) {
+		returns = push_token(queue, B_PLUS, '+');
+	}
+	else {
+		returns = push_token(queue, U_PLUS, '+');
+	}
+
+	return returns;
+}
+
 static inline ret_t parser(const char expression[], cqueue_t* token_queue) {
 	//
 }
