@@ -143,6 +143,22 @@ static inline ret_t multiply(cqueue_t* token_queue) {
 	return returns;
 }
 
+static inline void divide(cqueue_t* token_queue) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	queue_peek_end(token_queue, &token);
+
+	if (token->type == OPERAND || token->type == R_PARENTHESE) {
+		returns = push_token(token_queue, B_DIVIDE, '/');
+	}
+	else {
+		returns = INVALID_EXPRESSION;
+	}
+
+	return returns;
+}
+
 static inline ret_t parser(const char expression[], cqueue_t* token_queue) {
 	//
 }
