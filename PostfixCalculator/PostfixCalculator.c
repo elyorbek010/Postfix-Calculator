@@ -89,7 +89,7 @@ static inline ret_t r_parenthese(cqueue_t* token_queue) {
 		returns = push_token(token_queue, R_PARENTHESE, ')');
 	}
 	else {
-		returns =  FAILURE;
+		returns =  INVALID_EXPRESSION;
 	}
 
 	return returns;
@@ -122,6 +122,22 @@ static inline ret_t minus(cqueue_t* token_queue) {
 	}
 	else {
 		returns = push_token(token_queue, U_MINUS, '-');
+	}
+
+	return returns;
+}
+
+static inline ret_t multiply(cqueue_t* token_queue) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	queue_peek_end(token_queue, &token);
+
+	if (token->type == OPERAND || token->type == R_PARENTHESE) {
+		returns = push_token(token_queue, B_MULTIPLY, '*');
+	}
+	else {
+		returns = INVALID_EXPRESSION;
 	}
 
 	return returns;
