@@ -1,27 +1,23 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
-#include "returnType.h"
+#include "calculatorReturnType.h"
 #include "cqueue.h"
-#include "debug.h"
 
 typedef enum TokenType {
 	OPERAND,
+	L_PARENTHESE,
+	R_PARENTHESE,
 	B_PLUS,
 	B_MINUS,
 	B_MULTIPLY,
 	B_DIVIDE,
 	U_PLUS,
-	U_MINUS,
-	L_PARENTHESE,
-	R_PARENTHESE
+	U_MINUS
 } tokenType;
 
 typedef struct Token {
-	union {
-		char operator;
-		int operand;
-	};
+	int value;
 	tokenType type;
 }token_t;
 

@@ -2,7 +2,7 @@
 #define CALCULATOR_H_
 
 #include "cqueue.h"
-#include "returnType.h"
+#include "CalculatorReturnType.h"
 
 #define MAX_STRING_LEN 100
 

@@ -1,35 +1,39 @@
+#include <string.h>
 #include "parser.h"
 #include "ctype.h"
-#include <string.h>
+#include "debug.h"
 
-#define CREATE_TOKEN(token)						 \
-		do {									 \
-			token = malloc(sizeof (token));		 \
-			CHECK_AND_RETURN_IF_NOT_EXIST(token);\
-		} while(0)
+#define ASCII_TO_DECIMAL(character) (character - '0')
 
-static inline ret_t push_token(cqueue_t* token_queue, tokenType type, char character) {
-	token_t* token = NULL;
-	CREATE_TOKEN(token);
+static ret_t create_push_token(cqueue_t* token_queue, token_t token) {
+	token_t* token_ptr = NULL;
 
-	token->type = type;
-	token->operand = (type == OPERAND) ? (character - '0') : character;
-	if (queue_push_end(token_queue, token) != CQUEUE_SUCCESS)
+	token_ptr = malloc(sizeof(*token_ptr));
+
+	if (token_ptr == NULL) {
 		return FAILURE;
+	}
+	*token_ptr = token; // copy contents of auto storage token into dynamic storage token
+
+	if (queue_push_end(token_queue, token_ptr) != CQUEUE_SUCCESS) {
+		free(token_ptr);
+		return FAILURE;
+	}
 	return SUCCESS;
 }
 
-static inline ret_t l_parenthese(cqueue_t* token_queue) {
+static ret_t l_parenthese(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
 	if (queue_peek_end(token_queue, &token) == CQUEUE_UNDERFLOW) {
-		returns = push_token(token_queue, L_PARENTHESE, '(');
+		returns = create_push_token(token_queue, (token_t) {.type = L_PARENTHESE});
 	}
 	else if (token->type == OPERAND || token->type == R_PARENTHESE) {
-		if (push_token(token_queue, B_MULTIPLY, '*') == FAILURE)
+		if (create_push_token(token_queue, (token_t) { .type = B_MULTIPLY }) == FAILURE) {
 			return FAILURE;
-		returns = push_token(token_queue, L_PARENTHESE, '(');
+		}
+		returns = create_push_token(token_queue, (token_t) { .type = L_PARENTHESE });
 	}
 	else {
 		returns = INVALID_EXPRESSION;
@@ -38,14 +42,14 @@ static inline ret_t l_parenthese(cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline ret_t r_parenthese(cqueue_t* token_queue) {
+static ret_t r_parenthese(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
 	queue_peek_end(token_queue, &token);
 
 	if (token->type == OPERAND) {
-		returns = push_token(token_queue, R_PARENTHESE, ')');
+		returns = create_push_token(token_queue, (token_t) { .type = R_PARENTHESE });
 	}
 	else {
 		returns = INVALID_EXPRESSION;
@@ -54,14 +58,14 @@ static inline ret_t r_parenthese(cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline ret_t plus(cqueue_t* token_queue) {
+static ret_t plus(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
 	queue_peek_end(token_queue, &token);
 
 	if (token->type == OPERAND || token->type == R_PARENTHESE) {
-		returns = push_token(token_queue, B_PLUS, '+');
+		returns = create_push_token(token_queue, (token_t) { .type = B_PLUS });
 	}
 	else {
 		returns = push_token(token_queue, U_PLUS, '+');
@@ -70,46 +74,30 @@ static inline ret_t plus(cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline ret_t minus(cqueue_t* token_queue) {
+static ret_t minus(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
 	queue_peek_end(token_queue, &token);
-
+	
 	if (token->type == OPERAND || token->type == R_PARENTHESE) {
-		returns = push_token(token_queue, B_MINUS, '-');
+		returns = create_push_token(token_queue, (token_t) { .type = B_MINUS });
 	}
 	else {
-		returns = push_token(token_queue, U_MINUS, '-');
+		returns = create_push_token(token_queue, (token_t) { .type = U_MINUS });
 	}
 
 	return returns;
 }
 
-static inline ret_t multiply(cqueue_t* token_queue) {
+static ret_t multiply(cqueue_t* token_queue) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
 	queue_peek_end(token_queue, &token);
 
 	if (token->type == OPERAND || token->type == R_PARENTHESE) {
-		returns = push_token(token_queue, B_MULTIPLY, '*');
-	}
-	else {
-		returns = INVALID_EXPRESSION;
-	}
-
-	return returns;
-}
-
-static inline ret_t divide(cqueue_t* token_queue) {
-	token_t* token = NULL;
-	ret_t returns = SUCCESS;
-
-	queue_peek_end(token_queue, &token);
-
-	if (token->type == OPERAND || token->type == R_PARENTHESE) {
-		returns = push_token(token_queue, B_DIVIDE, '/');
+		returns = create_push_token(token_queue, (token_t) { .type = B_MULTIPLY });
 	}
 	else {
 		returns = INVALID_EXPRESSION;
@@ -118,7 +106,23 @@ static inline ret_t divide(cqueue_t* token_queue) {
 	return returns;
 }
 
-static inline ret_t digit(cqueue_t* token_queue, char digit, bool prev_is_space) {
+static ret_t divide(cqueue_t* token_queue) {
+	token_t* token = NULL;
+	ret_t returns = SUCCESS;
+
+	queue_peek_end(token_queue, &token);
+
+	if (token->type == OPERAND || token->type == R_PARENTHESE) {
+		returns = create_push_token(token_queue, (token_t) { .type = B_DIVIDE });
+	}
+	else {
+		returns = INVALID_EXPRESSION;
+	}
+
+	return returns;
+}
+
+static ret_t digit(cqueue_t* token_queue, char digit, bool prev_is_space) {
 	token_t* token = NULL;
 	ret_t returns = SUCCESS;
 
@@ -129,17 +133,17 @@ static inline ret_t digit(cqueue_t* token_queue, char digit, bool prev_is_space)
 			returns = INVALID_EXPRESSION;
 		}
 		else {
-			token->operand *= 10;
-			token->operand += digit - '0';
+			token->value *= 10;
+			token->value += ASCII_TO_DECIMAL(digit);
 		}
 	}
 	else if (token->type == R_PARENTHESE) {
-		if (push_token(token_queue, B_MULTIPLY, '*') == FAILURE)
+		if (create_push_token(token_queue, (token_t) { .type = B_MULTIPLY }) == FAILURE)
 			return FAILURE;
-		returns = push_token(token_queue, OPERAND, digit);
+		returns = push_token(token_queue, (token_t) { .type = OPERAND, .value = ASCII_TO_DECIMAL(digit) });
 	}
 	else {
-		returns = push_token(token_queue, OPERAND, digit);
+		returns = push_token(token_queue, (token_t) { .type = OPERAND, .value = ASCII_TO_DECIMAL(digit) });
 	}
 
 	return returns;
