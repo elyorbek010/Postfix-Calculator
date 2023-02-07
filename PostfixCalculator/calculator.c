@@ -121,10 +121,10 @@ static ret_t inf2post(cqueue_t** infix_token_queue) {
 	cqueue_t* postfix_token_queue = NULL;
 	ret_t returns = FAILURE;
 
-	if (!(operator_queue = queue_create(QUEUE_CAPACITY)))
+	if ((operator_queue = queue_create(QUEUE_CAPACITY)) == NULL)
 		goto label1;
 	
-	if (!(postfix_token_queue = queue_create(QUEUE_CAPACITY))) 
+	if ((postfix_token_queue = queue_create(QUEUE_CAPACITY)) == NULL) 
 		goto label2;
 
 	returns = inf2post_impl(*infix_token_queue, operator_queue, postfix_token_queue);
@@ -172,7 +172,7 @@ static ret_t post_calc_impl(cqueue_t* postfix_queue, cqueue_t* intermediate_queu
 
 		switch (token->type) {
 		case OPERAND:
-			if (!(value1 = malloc(sizeof(*value1)))) {
+			if ((value1 = malloc(sizeof(*value1))) == NULL) {
 				return FAILURE;
 			}
 			*value1 = token->value;
@@ -220,7 +220,7 @@ static ret_t post_calc(cqueue_t* postfix_queue, double* result) {
 	ret_t returns = SUCCESS;
 	double* double_ptr = NULL;
 
-	if (!(intermediate_queue = queue_create(QUEUE_CAPACITY))) {
+	if ((intermediate_queue = queue_create(QUEUE_CAPACITY)) == NULL) {
 		queue_destroy(intermediate_queue);
 		return FAILURE;
 	}
@@ -230,6 +230,7 @@ static ret_t post_calc(cqueue_t* postfix_queue, double* result) {
 	if (returns == SUCCESS) {
 		queue_pop_end(intermediate_queue, &double_ptr);
 		*result = *double_ptr;
+		free(double_ptr);
 	}
 
 	free_n_destroy_queue(intermediate_queue);

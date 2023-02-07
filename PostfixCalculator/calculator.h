@@ -12,6 +12,6 @@
 * returns FAILURE if no memory available for calculation
 * returns INVALID_EXPRESSION
 */
-ret_t postfixCalculator(char expression[], double* result);
+ret_t postfixCalculator(const char expression[], double* result);
 
 #endif
