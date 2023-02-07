@@ -2,9 +2,9 @@
 #define CALCULATOR_H_
 
 #include "cqueue.h"
-#include "CalculatorReturnType.h"
+#include "calculatorReturnType.h"
 
-#define MAX_STRING_LEN 100
+#define MAX_STRING_LEN 100 // max length including '\0'
 
 /**
 * Gets string arithmetic expression and calculates it

@@ -66,10 +66,10 @@ TEST(Valid, leadingZero) {
 TEST(Valid, divideByZero) {
 	double a = 0;
 
-	EXPECT_EQ(postfixCalculator("2/0", &a), INVALID_EXPRESSION);
+	EXPECT_EQ(postfixCalculator("2/0", &a), DIVISION_BY_ZERO);
 	EXPECT_EQ(a, 0);
 
-	EXPECT_EQ(postfixCalculator("2/(3-4+1)", &a), INVALID_EXPRESSION);
+	EXPECT_EQ(postfixCalculator("2/(3-4+1)", &a), DIVISION_BY_ZERO);
 	EXPECT_EQ(a, 0);
 }
 
@@ -184,19 +184,26 @@ TEST(Invalid, operatorMismatch) {
 	EXPECT_EQ(postfixCalculator("(1 + (2)", &a), INVALID_EXPRESSION);
 	EXPECT_EQ(a, 0);
 
+	EXPECT_EQ(postfixCalculator("1 + (2))", &a), INVALID_EXPRESSION);
+	EXPECT_EQ(a, 0);
+
 	EXPECT_EQ(postfixCalculator("1+", &a), INVALID_EXPRESSION);
 	EXPECT_EQ(a, 0);
 
 	EXPECT_EQ(postfixCalculator("1*", &a), INVALID_EXPRESSION);
 	EXPECT_EQ(a, 0);
 
+	EXPECT_EQ(postfixCalculator("+", &a), INVALID_EXPRESSION);
+	EXPECT_EQ(a, 0);
+}
+
+TEST(Invalid, emptyString) {
+	double a = 0;
+
 	EXPECT_EQ(postfixCalculator("", &a), INVALID_EXPRESSION);
 	EXPECT_EQ(a, 0);
 
 	EXPECT_EQ(postfixCalculator(" ", &a), INVALID_EXPRESSION);
-	EXPECT_EQ(a, 0);
-
-	EXPECT_EQ(postfixCalculator("+", &a), INVALID_EXPRESSION);
 	EXPECT_EQ(a, 0);
 }
 
