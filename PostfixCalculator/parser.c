@@ -36,7 +36,7 @@ static ret_t l_parenthese(cqueue_t* token_queue) {
 		returns = create_push_token(token_queue, (token_t) { .type = L_PARENTHESE });
 	}
 	else {
-		returns = INVALID_EXPRESSION;
+		returns = create_push_token(token_queue, (token_t) { .type = L_PARENTHESE });
 	}
 
 	return returns;
@@ -49,6 +49,9 @@ static ret_t r_parenthese(cqueue_t* token_queue) {
 	queue_peek_end(token_queue, &token);
 
 	if (token->type == OPERAND) {
+		returns = create_push_token(token_queue, (token_t) { .type = R_PARENTHESE });
+	}
+	else if(token->type == R_PARENTHESE){
 		returns = create_push_token(token_queue, (token_t) { .type = R_PARENTHESE });
 	}
 	else {
@@ -68,7 +71,7 @@ static ret_t plus(cqueue_t* token_queue) {
 		returns = create_push_token(token_queue, (token_t) { .type = B_PLUS });
 	}
 	else {
-		returns = push_token(token_queue, U_PLUS, '+');
+		returns = create_push_token(token_queue, (token_t) { .type = U_PLUS });
 	}
 
 	return returns;
@@ -140,10 +143,10 @@ static ret_t digit(cqueue_t* token_queue, char digit, bool prev_is_space) {
 	else if (token->type == R_PARENTHESE) {
 		if (create_push_token(token_queue, (token_t) { .type = B_MULTIPLY }) == FAILURE)
 			return FAILURE;
-		returns = push_token(token_queue, (token_t) { .type = OPERAND, .value = ASCII_TO_DECIMAL(digit) });
+		returns = create_push_token(token_queue, (token_t) { .type = OPERAND, .value = ASCII_TO_DECIMAL(digit) });
 	}
 	else {
-		returns = push_token(token_queue, (token_t) { .type = OPERAND, .value = ASCII_TO_DECIMAL(digit) });
+		returns = create_push_token(token_queue, (token_t) { .type = OPERAND, .value = ASCII_TO_DECIMAL(digit) });
 	}
 
 	return returns;
@@ -161,7 +164,7 @@ ret_t parser(const char expression[], cqueue_t* token_queue) {
 		return returns;
 	}
 
-	while (idx++ < exp_length) {
+	while (idx < exp_length) {
 		if (isdigit(expression[idx])) {
 			returns = digit(token_queue, expression[idx], prev_is_space);
 			prev_is_space = false;
@@ -190,6 +193,7 @@ ret_t parser(const char expression[], cqueue_t* token_queue) {
 		}
 		if (returns != SUCCESS)
 			return returns;
+		idx++;
 	}
 
 	returns = r_parenthese(token_queue); // add final ')'
